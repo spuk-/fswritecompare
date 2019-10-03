@@ -1,8 +1,8 @@
 #!/bin/sh
 
-FSIZE=3000000
+FSIZE=30000000
 SEEK=3333
-WRITESIZE=1
+WRITESIZE=${WRITESIZE:-1}
 
 echo "FSIZE=$FSIZE SEEK=$SEEK"
 
@@ -16,7 +16,7 @@ cp -f /tmp/urnd /tmp/btrfs/
 echo "== POST COPY / PRE MUTATION =="
 ./diskstats.sh
 for fs in ext4 ext3 xfs btrfs; do
-  echo -n 1 | dd of="/tmp/$fs/urnd" cbs=$WRITESIZE count=1 seek=$SEEK conv=notrunc oflag=sync 2>/dev/null
+  dd if=/tmp/urnd bs=$WRITESIZE count=1 2>/dev/null | dd of="/tmp/$fs/urnd" bs=$WRITESIZE count=1 seek=$SEEK conv=notrunc oflag=sync 2>/dev/null
 done
 echo "== POST MUTATION =="
 ./diskstats.sh
