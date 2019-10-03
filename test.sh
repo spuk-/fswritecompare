@@ -1,14 +1,22 @@
 #!/bin/sh
 
+FSIZE=3000000
+SEEK=3333
+WRITESIZE=1
+
+echo "FSIZE=$FSIZE SEEK=$SEEK"
+
 echo "== PRE COPY =="
 ./diskstats.sh
-dd if=/dev/urandom of=/tmp/urnd bs=3000000 count=1 2>/dev/null
+dd if=/dev/urandom of=/tmp/urnd bs=$FSIZE count=1 2>/dev/null
 cp -f /tmp/urnd /tmp/ext4/
 cp -f /tmp/urnd /tmp/ext3/
 cp -f /tmp/urnd /tmp/xfs/
 cp -f /tmp/urnd /tmp/btrfs/
-echo "== POST COPY / PRE SED =="
+echo "== POST COPY / PRE MUTATION =="
 ./diskstats.sh
-sed -r -i -e 's/5/9/g' /tmp/ext4/urnd /tmp/ext3/urnd /tmp/xfs/urnd /tmp/btrfs/urnd
-echo "== POST SED =="
+for fs in ext4 ext3 xfs btrfs; do
+  echo -n 1 | dd of="/tmp/$fs/urnd" cbs=$WRITESIZE count=1 seek=$SEEK conv=notrunc oflag=sync 2>/dev/null
+done
+echo "== POST MUTATION =="
 ./diskstats.sh
