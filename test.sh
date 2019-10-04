@@ -44,5 +44,5 @@ echo "== POST 4kb MUTATION / PRE APPEND =="
 for fs in "${FS[@]}"; do
   dd if=/tmp/urnd bs=$WRITESIZE count=1 2>/dev/null | dd of="/tmp/$fs/urnd" bs=$WRITESIZE count=1 conv=notrunc oflag=sync,append 2>/dev/null
 done
-echo "== POST MUTATION =="
+echo "== POST APPEND =="
 ./diskstats.sh
