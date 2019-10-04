@@ -1,6 +1,14 @@
 #!/bin/sh
 
-sync -f /tmp/ext4/ /tmp/ext3/ /tmp/xfs/ /tmp/btrfs/
+. "${0%/*}/fslst.sh"
+if [ ! "${#FS[@]}" -gt 0 ]; then
+    echo "Can't get fslst."
+    exit 1
+fi
+
+for fs in "${FS[@]}"; do
+    sync -f "/tmp/$fs"
+done
 # Show header
 losetup -nal | while read dev q q q q fs q; do
   printf "%20.20s   " $fs

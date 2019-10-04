@@ -1,16 +1,21 @@
 #!/bin/sh
 
-umount /tmp/btrfs /tmp/ext4 /tmp/ext3 /tmp/xfs
-dd if=/dev/zero of=/tmp/btrfs.img bs=1M count=200
-dd if=/dev/zero of=/tmp/ext4.img bs=1M count=200
-dd if=/dev/zero of=/tmp/ext3.img bs=1M count=200
-dd if=/dev/zero of=/tmp/xfs.img bs=1M count=200
-mkfs.btrfs /tmp/btrfs.img
-mkfs.ext4 /tmp/ext4.img
-mkfs.ext3 /tmp/ext3.img
-mkfs.xfs /tmp/xfs.img
-mkdir -p /tmp/btrfs /tmp/ext4 /tmp/ext3 /tmp/xfs
-mount -o loop /tmp/btrfs.img /tmp/btrfs
-mount -o loop /tmp/ext4.img /tmp/ext4
-mount -o loop /tmp/ext3.img /tmp/ext3
-mount -o loop /tmp/xfs.img /tmp/xfs
+. "${0%/*}/fslst.sh"
+if [ ! "${#FS[@]}" -gt 0 ]; then
+    echo "Can't get fslst."
+    exit 1
+fi
+
+for fs in "${FS[@]}"; do
+    umount "/tmp/$fs"
+done
+for fs in "${FS[@]}"; do
+    dd if=/dev/zero of="/tmp/$fs.img" bs=1M count=200
+    case "$fs" in
+	ntfs) MKFSCMD=("mkfs.$fs" "-F") ;;
+	   *) MKFSCMD=("mkfs.$fs") ;;
+    esac
+    "${MKFSCMD[@]}" "/tmp/$fs.img"
+    mkdir -p "/tmp/$fs"
+    mount -o loop,noatime "/tmp/$fs.img" "/tmp/$fs"
+done
