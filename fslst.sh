@@ -10,4 +10,5 @@ FS+=("ntfs")
 FS+=("vfat")
 FS+=("exfat")
 FS+=("reiserfs")
+FS+=("f2fs")
 
