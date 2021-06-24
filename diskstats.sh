@@ -7,7 +7,7 @@ if [ ! "${#FS[@]}" -gt 0 ]; then
 fi
 
 for fs in "${FS[@]}"; do
-    sync -f "/tmp/$fs"
+    sync -f "/tmp/testfswritecompare/$fs"
 done
 if [ -z "$NOHEADERS" ]; then
     # Show header
