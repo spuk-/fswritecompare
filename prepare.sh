@@ -12,9 +12,11 @@ for fs in "${FS[@]}"; do
     umount "/tmp/testfswritecompare/$fs"
 done
 for fs in "${FS[@]}"; do
-    dd if=/dev/zero of="/tmp/testfswritecompare/$fs.img" bs=1M count=200
+    dd if=/dev/zero of="/tmp/testfswritecompare/$fs.img" bs=1M count=400
     case "$fs" in
-	ntfs) MKFSCMD=("mkfs.$fs" "-QCF"); MOUNTOPTS="compress,big_writes" ;;
+  btrfsnocow) MKFSCMD=("mkfs.btrfs"); MOUNTOPTS="nodatacow" ;;
+       btrfs) MKFSCMD=("mkfs.btrfs"); MOUNTOPTS="compress=lzo" ;;
+	ntfs) MKFSCMD=("mkfs.$fs" "-QCF"); MOUNTOPTS="" ;;
     reiserfs) MKFSCMD=("mkfs.$fs" "-f"); MOUNTOPTS="" ;;
 	   *) MKFSCMD=("mkfs.$fs"); MOUNTOPTS="" ;;
     esac
