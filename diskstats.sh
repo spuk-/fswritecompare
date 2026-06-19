@@ -12,13 +12,16 @@ done
 if [ -z "$NOHEADERS" ]; then
     # Show header
     losetup -nal | sort | while read dev q q q q fs q; do
-      printf "%10.10s   " ${fs##*/}
+      printf ",%s" ${fs##*/}
     done
     echo
+fi
+if [ -n "$ONLYHEADERS" ]; then
+    exit
 fi
 # Show numbers
 losetup -nal | sort | while read dev q q q q fs q; do
   read q q q q q q wrsects q </sys/class/block/${dev##*/}/stat
-  printf "%10.10s   " $wrsects
+  printf ",%s" $wrsects
 done
 echo
